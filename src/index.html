@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#2d5a1b">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <title>チャムズファンタジー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ① タイトル -->
+  <section id="screen-title" class="screen">
+    <div class="title-logo">
+      <h1>チャムズ<br>ファンタジー</h1>
+      <p class="subtitle">えいごで せかいを すくえ！</p>
+    </div>
+    <button id="btn-title-start" class="big-btn">✨ はじめる</button>
+    <button id="btn-title-load" class="sub-btn hidden">📁 つづきから</button>
+  </section>
+
+  <!-- ② 名前入力 -->
+  <section id="screen-name" class="screen hidden">
+    <div class="name-screen-inner">
+      <h2>ゆうしゃの なまえは？</h2>
+      <div class="name-input-wrap">
+        <input id="hero-name-input" type="text" maxlength="6" placeholder="なまえを いれてね">
+      </div>
+      <button id="btn-name-ok" class="big-btn" disabled>けってい ▶</button>
+    </div>
+  </section>
+
+  <!-- ③ セーブ選択 -->
+  <section id="screen-save" class="screen hidden">
+    <h2>つづきを えらんでね</h2>
+    <div id="save-slots"></div>
+    <button id="btn-save-new" class="sub-btn">✨ あたらしく はじめる</button>
+  </section>
+
+  <!-- ④ こびと選択 -->
+  <section id="screen-character" class="screen hidden">
+    <h2>おともを えらんでね</h2>
+    <p class="subtitle">えいごを いっしょに れんしゅう してくれるよ！</p>
+    <div id="char-cards">
+      <div class="char-card" data-key="riku">
+        <img src="img/riku.png" alt="リク" class="char-img">
+        <p class="char-name">リク</p>
+        <p class="char-trait">🔴 ゆうき</p>
+      </div>
+      <div class="char-card" data-key="paku">
+        <img src="img/paku.png" alt="パク" class="char-img">
+        <p class="char-name">パク</p>
+        <p class="char-trait">🟡 げんき</p>
+      </div>
+      <div class="char-card" data-key="mimi">
+        <img src="img/mimi.png" alt="ミミ" class="char-img">
+        <p class="char-name">ミミ</p>
+        <p class="char-trait">🌸 やさしさ</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ ワールドマップ -->
+  <section id="screen-world" class="screen hidden">
+
+    <!-- ステータスバー（上部） -->
+    <div id="world-hero-bar">
+      <img id="world-kobito-img" src="" alt="" class="mini-kobito">
+      <div id="world-hero-info">
+        <div id="world-hero-name"></div>
+        <div id="world-hero-lv"></div>
+      </div>
+      <div id="world-hp-area">
+        <div class="bar-row">
+          <span class="bar-label-sm">HP</span>
+          <div class="bar-track"><div id="world-hp-bar" class="bar-fill bar-hp"></div></div>
+          <span id="world-hp-num" class="bar-num"></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label-sm">EXP</span>
+          <div class="bar-track"><div id="world-exp-bar" class="bar-fill bar-exp"></div></div>
+          <span id="world-exp-num" class="bar-num"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- メイン: 英会話練習エリア -->
+    <div id="world-english-section">
+      <div id="world-english-card">
+        <div id="world-english-top">
+          <img id="world-kobito-big" src="" alt="" class="world-kobito-big">
+          <div id="world-kobito-bubble" class="world-bubble"></div>
+        </div>
+        <button id="btn-english-main" class="english-main-btn">
+          💬 えいごれんしゅう
+          <span class="english-main-sub">ことだまポイントをためよう！</span>
+        </button>
+        <div class="bar-row world-pt-row">
+          <span class="bar-label-sm">Pt</span>
+          <div class="bar-track"><div id="world-pt-bar" class="bar-fill bar-pt"></div></div>
+          <span id="world-pt-num" class="bar-num">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- サブ: ぼうけんエリア -->
+    <div id="world-battle-section">
+      <div id="world-battle-header">⚔️ ぼうけんエリア</div>
+      <div id="area-buttons"></div>
+    </div>
+
+    <div id="world-footer">
+      <button id="btn-zukan"     class="icon-btn">📖<br><small>ずかん</small></button>
+      <button id="btn-conv-mode" class="icon-btn">💬<br><small>えいかいわ</small></button>
+      <button id="btn-minigame"  class="icon-btn">🎮<br><small>ゲーム</small></button>
+      <button id="btn-to-title"  class="icon-btn">🏠<br><small>タイトル</small></button>
+    </div>
+  </section>
+
+  <!-- ⑥ バトル画面 -->
+  <section id="screen-battle" class="screen hidden">
+    <div id="battle-enemy-area">
+      <div id="enemy-name"></div>
+      <img id="enemy-img" src="" alt="" class="enemy-img">
+      <div id="enemy-emoji-big" class="hidden"></div>
+      <div class="bar-row battle-bar">
+        <span class="bar-label-sm">HP</span>
+        <div class="bar-track"><div id="enemy-hp-bar" class="bar-fill bar-hp"></div></div>
+        <span id="enemy-hp-num" class="bar-num"></span>
+      </div>
+    </div>
+
+    <div id="battle-log-wrap">
+      <div id="battle-log"></div>
+    </div>
+
+    <div id="battle-hero-area">
+      <div id="battle-kobito-side">
+        <img id="battle-kobito-img" src="" alt="こびと" class="battle-kobito-img">
+        <div id="battle-kobito-name"></div>
+      </div>
+      <div id="battle-hero-stats">
+        <div id="battle-hero-name"></div>
+        <div class="bar-row">
+          <span class="bar-label-sm">HP</span>
+          <div class="bar-track"><div id="battle-hero-hp-bar" class="bar-fill bar-hp"></div></div>
+          <span id="battle-hero-hp-num" class="bar-num"></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label-sm">MP</span>
+          <div class="bar-track"><div id="battle-hero-mp-bar" class="bar-fill bar-mp"></div></div>
+          <span id="battle-hero-mp-num" class="bar-num"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="battle-actions">
+      <div id="magic-buttons"></div>
+    </div>
+  </section>
+
+  <!-- ⑦ 図鑑 -->
+  <section id="screen-zukan" class="screen hidden">
+    <div id="zukan-header">
+      <button id="btn-zukan-back" class="back-btn">◀</button>
+      <h2>ずかん</h2>
+      <div style="width:40px"></div>
+    </div>
+    <div id="zukan-tabs">
+      <button class="zukan-tab active" data-tab="monster">👾 モンスター</button>
+      <button class="zukan-tab" data-tab="magic">✨ まほう</button>
+      <button class="zukan-tab" data-tab="phrase">💬 ことだま</button>
+    </div>
+    <div id="zukan-list"></div>
+  </section>
+
+  <!-- ⑧ エンディング -->
+  <section id="screen-ending" class="screen hidden">
+    <div class="ending-inner">
+      <p class="ending-title">🎊 クリア！ 🎊</p>
+      <img id="ending-kobito" src="" alt="" class="ending-kobito-img">
+      <p id="ending-text" class="ending-text"></p>
+      <button id="btn-ending-back" class="big-btn">タイトルへ 🏠</button>
+    </div>
+  </section>
+
+  <!-- ── オーバーレイ群 ── -->
+
+  <!-- ストーリーテキスト -->
+  <div id="overlay-story" class="overlay hidden">
+    <div class="overlay-content story-content">
+      <p id="story-text" class="story-text"></p>
+      <button id="btn-story-next" class="big-btn">つぎへ ▶</button>
+    </div>
+  </div>
+
+  <!-- バトル結果 -->
+  <div id="overlay-result" class="overlay hidden">
+    <div class="overlay-content">
+      <p id="result-icon" class="result-icon"></p>
+      <p id="result-title" class="overlay-title"></p>
+      <p id="result-detail" class="overlay-sub"></p>
+      <button id="btn-result-ok" class="big-btn"></button>
+    </div>
+  </div>
+
+  <!-- 英会話練習 -->
+  <div id="overlay-english" class="overlay hidden">
+    <div class="overlay-content english-content">
+      <p id="eng-label" class="eng-label">🌟 えいごで パワーアップ！</p>
+      <div id="eng-kobito-wrap">
+        <img id="eng-kobito-img" src="" alt="こびと" class="eng-kobito-img">
+        <div id="eng-bubble" class="eng-bubble"></div>
+      </div>
+      <p id="eng-prompt" class="eng-prompt"></p>
+      <div id="eng-choices"></div>
+      <button id="eng-btn-mic" class="mic-btn hidden">🎤 じぶんで いってみる</button>
+      <p id="eng-pt-display" class="eng-pt"></p>
+    </div>
+  </div>
+
+  <!-- レベルアップ通知 -->
+  <div id="overlay-levelup" class="overlay hidden">
+    <div class="overlay-content">
+      <img id="levelup-kobito-img" src="" alt="" class="levelup-kobito-img">
+      <p class="overlay-title">⭐ レベルアップ！ ⭐</p>
+      <p id="levelup-detail" class="overlay-sub"></p>
+      <button id="btn-levelup-ok" class="big-btn">えいごを れんしゅう ▶</button>
+    </div>
+  </div>
+
+  <!-- こびと進化 -->
+  <div id="overlay-evolution" class="overlay hidden">
+    <div class="overlay-content">
+      <p class="overlay-title">✨ しんか！ ✨</p>
+      <img id="evo-kobito-img" src="" alt="" class="evo-kobito-img">
+      <p id="evo-name" class="evo-name"></p>
+      <p id="evo-title-text" class="overlay-sub"></p>
+      <button id="btn-evo-ok" class="big-btn">すごい！ ▶</button>
+    </div>
+  </div>
+
+  <!-- ミニゲーム -->
+  <div id="overlay-minigame" class="overlay hidden">
+    <div class="overlay-content minigame-content">
+      <div id="mg-header">
+        <button id="btn-mg-close" class="back-btn">✕</button>
+        <p id="mg-title" class="mg-title-text"></p>
+        <div style="width:40px"></div>
+      </div>
+      <div id="mg-body"></div>
+      <p id="mg-score-display" class="mg-score"></p>
+    </div>
+  </div>
+
+  <!-- 勝利演出 -->
+  <div id="overlay-victory" class="overlay hidden">
+    <div class="overlay-content victory-content">
+      <div id="victory-confetti"></div>
+      <p id="victory-title" class="victory-title">🎉 やったー！ 🎉</p>
+      <div class="victory-enemy-wrap">
+        <img id="victory-enemy-img" src="" alt="" class="victory-enemy-img">
+        <div id="victory-enemy-emoji" class="victory-enemy-emoji hidden"></div>
+      </div>
+      <p id="victory-enemy-name" class="victory-enemy-name"></p>
+      <div id="victory-rewards" class="victory-rewards"></div>
+      <button id="btn-victory-ok" class="big-btn">つぎへ ▶</button>
+    </div>
+  </div>
+
+  <!-- 英会話モード：トピック選択 -->
+  <div id="overlay-conv-select" class="overlay hidden">
+    <div class="overlay-content conv-select-content">
+      <div class="conv-select-header">
+        <button id="btn-conv-select-close" class="back-btn">✕</button>
+        <p class="conv-select-title">💬 えいかいわ</p>
+        <div style="width:40px"></div>
+      </div>
+      <p class="conv-select-sub">こびとと えいごで おはなし しよう！</p>
+      <div id="conv-select-list"></div>
+    </div>
+  </div>
+
+  <!-- 英会話モード：会話画面 -->
+  <div id="overlay-conversation" class="overlay hidden">
+    <div class="overlay-content conv-content">
+      <div id="conv-header">
+        <button id="btn-conv-back" class="back-btn">◀</button>
+        <p id="conv-title" class="conv-title-text"></p>
+        <span id="conv-progress" class="conv-progress"></span>
+      </div>
+      <div id="conv-chat"></div>
+      <div id="conv-choices"></div>
+    </div>
+  </div>
+
+  <!-- 確認ダイアログ（confirm()の代わり） -->
+  <div id="overlay-confirm" class="overlay hidden">
+    <div class="overlay-content confirm-content">
+      <p id="confirm-msg" class="confirm-msg"></p>
+      <div class="confirm-btns">
+        <button id="btn-confirm-no"  class="sub-btn">キャンセル</button>
+        <button id="btn-confirm-yes" class="danger-btn confirm-yes-btn">けす</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- フィードバックトースト -->
+  <div id="feedback-toast" class="hidden">
+    <span id="feedback-icon"></span>
+    <span id="feedback-msg"></span>
+  </div>
+
+</div>
+<script src="js/data.js"></script>
+<script src="js/game.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
