@@ -134,16 +134,95 @@ function showToast(icon, msg) {
   }, 1800);
 }
 
+// ─── タイトル：パーティクル ───
+let _titleRaf = null;
+function startTitleCanvas() {
+  const cv = $('title-canvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  let w = cv.width  = cv.offsetWidth;
+  let h = cv.height = cv.offsetHeight;
+
+  const STARS = Array.from({length: 72}, () => ({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 1.4 + 0.3,
+    a: Math.random(),
+    da: (Math.random() * 0.009 + 0.003) * (Math.random() < 0.5 ? 1 : -1),
+    vy: Math.random() * 0.00025 + 0.00008,
+  }));
+  const GLOWS = Array.from({length: 14}, () => ({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 4 + 2,
+    a: Math.random() * 0.28,
+    da: (Math.random() * 0.004 + 0.002) * (Math.random() < 0.5 ? 1 : -1),
+    vy: Math.random() * 0.00015 + 0.00005,
+  }));
+
+  function draw() {
+    if (w !== cv.offsetWidth || h !== cv.offsetHeight) {
+      w = cv.width  = cv.offsetWidth;
+      h = cv.height = cv.offsetHeight;
+    }
+    ctx.clearRect(0, 0, w, h);
+    STARS.forEach(s => {
+      s.y -= s.vy; if (s.y < -0.02) s.y = 1.02;
+      s.a += s.da;
+      if (s.a > 1) { s.a = 1; s.da = -Math.abs(s.da); }
+      if (s.a < 0) { s.a = 0; s.da =  Math.abs(s.da); }
+      ctx.save();
+      ctx.globalAlpha = s.a * 0.88;
+      ctx.fillStyle = '#b0ffaa';
+      ctx.shadowColor = '#50ff30'; ctx.shadowBlur = 6;
+      ctx.beginPath(); ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+    GLOWS.forEach(g => {
+      g.y -= g.vy; if (g.y < -0.06) g.y = 1.06;
+      g.a += g.da;
+      if (g.a > 0.32) { g.a = 0.32; g.da = -Math.abs(g.da); }
+      if (g.a < 0)    { g.a = 0;    g.da =  Math.abs(g.da); }
+      ctx.save();
+      ctx.globalAlpha = g.a;
+      ctx.fillStyle = '#70ff50';
+      ctx.shadowColor = '#30ff10'; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.arc(g.x * w, g.y * h, g.r, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+    _titleRaf = requestAnimationFrame(draw);
+  }
+  if (_titleRaf) cancelAnimationFrame(_titleRaf);
+  draw();
+}
+function stopTitleCanvas() {
+  if (_titleRaf) { cancelAnimationFrame(_titleRaf); _titleRaf = null; }
+}
+
 // ─── タイトル ───
 function renderTitle() {
   showScreen('title');
   hideAllOverlays();
   loadAllSlots();
-  $('btn-title-load').classList.toggle('hidden', !saveSlots.some(s => s !== null));
+  const hasSave = saveSlots.some(s => s !== null);
+  $('btn-title-load').classList.toggle('hidden', !hasSave);
+  $('title-start-panel').classList.add('hidden');
+  const hint = $('title-tap-hint');
+  if (hint) hint.style.display = '';
+  startTitleCanvas();
+  $('title-inner').onclick = () => {
+    if (hasSave) {
+      if (hint) hint.style.display = 'none';
+      $('title-start-panel').classList.remove('hidden');
+      $('title-inner').onclick = null;
+    } else {
+      stopTitleCanvas();
+      renderNameInput();
+    }
+  };
 }
 
 // ─── 名前入力 ───
 function renderNameInput() {
+  stopTitleCanvas();
   showScreen('name');
   const inp = $('hero-name-input');
   const btn = $('btn-name-ok');
@@ -154,6 +233,7 @@ function renderNameInput() {
 
 // ─── セーブ選択 ───
 function renderSaveSelect() {
+  stopTitleCanvas();
   showScreen('save');
   const container = $('save-slots');
   container.innerHTML = '';

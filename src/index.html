@@ -17,12 +17,26 @@
 
   <!-- ① タイトル -->
   <section id="screen-title" class="screen">
-    <div class="title-logo">
-      <h1>チャムズ<br>ファンタジー</h1>
-      <p class="subtitle">えいごで せかいを すくえ！</p>
+    <canvas id="title-canvas"></canvas>
+    <div id="title-inner">
+      <div id="title-logo-box">
+        <p class="title-pre-text">まほうの ことばで</p>
+        <h1 id="title-h1">チャムズ<br>ファンタジー</h1>
+        <p class="title-sub-text">えいごで せかいを すくえ！</p>
+      </div>
+      <div id="title-kobitos">
+        <img src="img/riku.png" alt="リク" class="title-kobito title-k-l">
+        <img src="img/paku.png" alt="パク" class="title-kobito title-k-c">
+        <img src="img/mimi.png" alt="ミミ" class="title-kobito title-k-r">
+      </div>
+      <div id="title-tap-area">
+        <p id="title-tap-hint">✨ タップして はじめる ✨</p>
+      </div>
     </div>
-    <button id="btn-title-start" class="big-btn">✨ はじめる</button>
-    <button id="btn-title-load" class="sub-btn hidden">📁 つづきから</button>
+    <div id="title-start-panel" class="hidden">
+      <button id="btn-title-start" class="big-btn">✨ あたらしく はじめる</button>
+      <button id="btn-title-load" class="sub-btn hidden">📁 つづきから</button>
+    </div>
   </section>
 
   <!-- ② 名前入力 -->
