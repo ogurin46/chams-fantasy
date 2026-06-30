@@ -208,16 +208,21 @@ function renderTitle() {
   const hint = $('title-tap-hint');
   if (hint) hint.style.display = '';
   startTitleCanvas();
-  $('title-inner').onclick = () => {
+  let _tapped = false;
+  function onTitleTap(e) {
+    if (e && e.type === 'touchend') e.preventDefault();
+    if (_tapped) return;
+    _tapped = true;
     if (hasSave) {
       if (hint) hint.style.display = 'none';
       $('title-start-panel').classList.remove('hidden');
-      $('title-inner').onclick = null;
     } else {
       stopTitleCanvas();
       renderNameInput();
     }
-  };
+  }
+  $('title-inner').ontouchend = onTitleTap;
+  $('title-inner').onclick    = onTitleTap;
 }
 
 // ─── 名前入力 ───
