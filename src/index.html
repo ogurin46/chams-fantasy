@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#5a1b4a">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <title>めいたんてい チャムズ 〜えいごじけんぼ〜</title>
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="app">
+
+  <!-- ① タイトル -->
+  <section id="screen-title" class="screen">
+    <canvas id="title-canvas"></canvas>
+    <div id="title-inner">
+      <div id="title-logo-box">
+        <p class="title-pre-text">🔍 えいごで なぞとき！</p>
+        <h1 id="title-h1">めいたんてい<br>チャムズ</h1>
+        <p class="title-sub-text">〜 えいご じけんぼ 〜</p>
+      </div>
+      <div id="title-chars">
+        <img src="img/riku.png" alt="リク" class="title-cham title-c-l">
+        <img src="img/heroine.png" alt="めいたんてい" class="title-heroine">
+        <img src="img/mimi.png" alt="ミミ" class="title-cham title-c-r">
+        <img src="img/paku.png" alt="パク" class="title-cham title-c-b">
+      </div>
+      <div id="title-tap-area">
+        <p id="title-tap-hint">✨ タップして はじめる ✨</p>
+      </div>
+    </div>
+    <div id="title-start-panel" class="hidden">
+      <button id="btn-title-start" class="big-btn">✨ あたらしく はじめる</button>
+      <button id="btn-title-load" class="sub-btn hidden">📁 つづきから</button>
+    </div>
+  </section>
+
+  <!-- ② 名前入力 -->
+  <section id="screen-name" class="screen hidden">
+    <div class="name-screen-inner">
+      <img src="img/heroine.png" alt="" class="name-heroine">
+      <h2>めいたんていの なまえは？</h2>
+      <div class="name-input-wrap">
+        <input id="hero-name-input" type="text" maxlength="6" placeholder="なまえを いれてね">
+      </div>
+      <button id="btn-name-ok" class="big-btn" disabled>けってい ▶</button>
+    </div>
+  </section>
+
+  <!-- ③ セーブ選択 -->
+  <section id="screen-save" class="screen hidden">
+    <h2>つづきを えらんでね</h2>
+    <div id="save-slots"></div>
+    <button id="btn-save-new" class="sub-btn">✨ あたらしく はじめる</button>
+  </section>
+
+  <!-- ④ 事件簿（ホーム） -->
+  <section id="screen-casefile" class="screen hidden">
+    <div id="casefile-header">
+      <img src="img/heroine_face.png" alt="" class="cf-face">
+      <div class="cf-info">
+        <div id="cf-name"></div>
+        <div id="cf-rank"></div>
+      </div>
+      <div id="cf-progress"></div>
+    </div>
+    <h2 class="casefile-title">📖 じけんぼ</h2>
+    <div id="case-list"></div>
+    <div id="casefile-footer">
+      <button id="btn-note" class="icon-btn">📝<br><small>てがかりノート</small></button>
+      <button id="btn-to-title" class="icon-btn">🏠<br><small>タイトル</small></button>
+    </div>
+  </section>
+
+  <!-- ⑤ 事件プレイ -->
+  <section id="screen-case" class="screen hidden">
+    <div id="case-header">
+      <button id="btn-case-quit" class="back-btn">✕</button>
+      <span id="case-header-title"></span>
+      <span id="case-step-label"></span>
+    </div>
+    <div id="clue-chips"></div>
+
+    <div id="witness-area">
+      <div id="witness-box">
+        <img id="witness-img" src="" alt="" class="witness-img">
+        <span id="witness-name" class="witness-name"></span>
+      </div>
+      <div id="witness-says-wrap" class="hidden">
+        <div id="witness-says" class="witness-says"></div>
+        <button id="btn-replay-says" class="replay-btn">🔊 もういちど きく</button>
+      </div>
+    </div>
+
+    <p id="scene-text"></p>
+    <p id="case-question"></p>
+
+    <p class="cham-row-label">🔍 ただしいのは どの チャムズ？</p>
+    <div id="cham-row"></div>
+  </section>
+
+  <!-- ── オーバーレイ群 ── -->
+
+  <!-- ストーリー -->
+  <div id="overlay-story" class="overlay hidden">
+    <div class="overlay-content story-content">
+      <p id="story-text" class="story-text"></p>
+      <button id="btn-story-next" class="big-btn">つぎへ ▶</button>
+    </div>
+  </div>
+
+  <!-- てがかりゲット -->
+  <div id="overlay-clue" class="overlay hidden">
+    <div class="overlay-content clue-content">
+      <p class="clue-get-label">💡 てがかりゲット！</p>
+      <p id="clue-icon" class="clue-big-icon"></p>
+      <p id="clue-text" class="clue-text"></p>
+      <button id="btn-clue-ok" class="big-btn">メモした！ ▶</button>
+    </div>
+  </div>
+
+  <!-- なぞとき -->
+  <div id="overlay-deduce" class="overlay hidden">
+    <div class="overlay-content deduce-content">
+      <p class="deduce-label">🔍 なぞとき タイム！</p>
+      <img src="img/heroine_thinking.png" alt="" class="deduce-heroine">
+      <p id="deduce-question" class="deduce-question"></p>
+      <div id="deduce-clues"></div>
+      <div id="deduce-suspects"></div>
+      <p id="deduce-hint" class="deduce-hint"></p>
+    </div>
+  </div>
+
+  <!-- じけんかいけつ -->
+  <div id="overlay-solved" class="overlay hidden">
+    <div class="overlay-content solved-content">
+      <div id="solved-confetti"></div>
+      <div class="solved-stamp">じけん<br>かいけつ！</div>
+      <p id="solved-title-case" class="solved-case-name"></p>
+      <p id="solved-stars" class="solved-stars"></p>
+      <p class="solved-phrases-label">📝 きょう おぼえた えいご</p>
+      <div id="solved-phrases"></div>
+      <button id="btn-solved-ok" class="big-btn">やったー！ ▶</button>
+    </div>
+  </div>
+
+  <!-- ランクアップ -->
+  <div id="overlay-rank" class="overlay hidden">
+    <div class="overlay-content rank-content">
+      <p class="rank-label">🎖️ ランクアップ！</p>
+      <p id="rank-icon-el" class="rank-big-icon"></p>
+      <p id="rank-name-el" class="rank-name"></p>
+      <button id="btn-rank-ok" class="big-btn">すごい！ ▶</button>
+    </div>
+  </div>
+
+  <!-- てがかりノート -->
+  <div id="overlay-note" class="overlay hidden">
+    <div class="overlay-content note-content">
+      <div class="note-header">
+        <button id="btn-note-close" class="back-btn">✕</button>
+        <p class="note-title">📝 てがかりノート</p>
+        <div style="width:40px"></div>
+      </div>
+      <p class="note-sub">タップすると きけるよ！</p>
+      <div id="note-list"></div>
+    </div>
+  </div>
+
+  <!-- 確認ダイアログ -->
+  <div id="overlay-confirm" class="overlay hidden">
+    <div class="overlay-content confirm-content">
+      <p id="confirm-msg" class="confirm-msg"></p>
+      <div class="confirm-btns">
+        <button id="btn-confirm-no"  class="sub-btn">キャンセル</button>
+        <button id="btn-confirm-yes" class="danger-btn confirm-yes-btn">けす</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- フィードバックトースト -->
+  <div id="feedback-toast" class="hidden">
+    <span id="feedback-icon"></span>
+    <span id="feedback-msg"></span>
+  </div>
+
+</div>
+<script src="js/data.js?v=1"></script>
+<script src="js/game.js?v=1"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
