@@ -11,23 +11,20 @@ const CHAMS = {
 };
 const CHAM_KEYS = ['riku', 'paku', 'mimi'];
 
-// ─── ことばのもりの住人たち（旧モンスター画像を再利用） ───
+// ─── ことばのもりの かわいい どうぶつたち ───
 const RESIDENTS = {
-  slime:       { name:'スライムくん',     img:'img/enemy_slime.png',        emoji:'🟢' },
-  mushroom:    { name:'キノコさん',       img:'img/enemy_mushroom.png',     emoji:'🍄' },
-  leafBug:     { name:'はっぱちゃん',     img:'img/enemy_leafBug.png',      emoji:'🐛' },
-  bat:         { name:'コウモリくん',     img:'img/enemy_bat.png',          emoji:'🦇' },
-  spider:      { name:'クモちゃん',       img:'img/enemy_spider.png',       emoji:'🕷️' },
-  skeleton:    { name:'ガイコツさん',     img:'img/enemy_skeleton.png',     emoji:'💀' },
-  crab:        { name:'カニさん',         img:'img/enemy_crab.png',         emoji:'🦀' },
-  jellyfish:   { name:'クラゲちゃん',     img:'img/enemy_jellyfish.png',    emoji:'🪼' },
-  fishKnight:  { name:'さかなのきし',     img:'img/enemy_fishKnight.png',   emoji:'🐟' },
-  stormBird:   { name:'とりさん',         img:'img/enemy_stormBird.png',    emoji:'🦅' },
-  darkCloud:   { name:'くもくん',         img:'img/enemy_darkCloud.png',    emoji:'☁️' },
-  giantSpider: { name:'クモのおかあさん', img:'img/enemy_giantSpider.png',  emoji:'🕸️' },
-  seaKing:     { name:'うみのおうさま',   img:'img/enemy_seaKing.png',      emoji:'🔱' },
-  shadowKnight:{ name:'よろいのきし',     img:'img/enemy_shadowKnight.png', emoji:'🗡️' },
-  bigSlime:    { name:'おおきなスライム', img:'img/enemy_darkSlime.png',    emoji:'⬛' },
+  rabbit:   { name:'うさちゃん',     img:'img/animal_rabbit.png',   emoji:'🐰' },
+  squirrel: { name:'りすさん',       img:'img/animal_squirrel.png', emoji:'🐿️' },
+  bear:     { name:'くまくん',       img:'img/animal_bear.png',     emoji:'🐻' },
+  bird:     { name:'ことりちゃん',   img:'img/animal_bird.png',     emoji:'🐦' },
+  fox:      { name:'きつねくん',     img:'img/animal_fox.png',      emoji:'🦊' },
+  owl:      { name:'ふくろうはかせ', img:'img/animal_owl.png',      emoji:'🦉' },
+  penguin:  { name:'ぺんぎんくん',   img:'img/animal_penguin.png',  emoji:'🐧' },
+  dolphin:  { name:'いるかちゃん',   img:'img/animal_dolphin.png',  emoji:'🐬' },
+  turtle:   { name:'かめじいさん',   img:'img/animal_turtle.png',   emoji:'🐢' },
+  cat:      { name:'ねこちゃん',     img:'img/animal_cat.png',      emoji:'🐱' },
+  dog:      { name:'いぬくん',       img:'img/animal_dog.png',      emoji:'🐶' },
+  panda:    { name:'ぱんださん',     img:'img/animal_panda.png',    emoji:'🐼' },
 };
 
 // ─── 探偵ランク（解決した事件の数で上がる） ───
@@ -45,9 +42,9 @@ function getRank(solvedCount) {
 // ─── オープニング（はじめてプレイするとき） ───
 const PROLOGUE = [
   'ある日、まほうしょうじょの めいたんていは、ふしぎな ひかりに つつまれた…！',
-  'きがつくと、そこは 「ことばのもり」。こびとの チャムズたちが すむ せかい！',
+  'きがつくと、そこは 「ことばのもり」。こびとの チャムズたちと かわいい どうぶつたちが すむ せかい！',
   'リク「たすけて めいたんてい！ このもりでは こまった じけんが いっぱい おきてるんだ！」',
-  'パク「このせかいの みんなは えいごで おはなしするよ。ぼくたちが てつだうね！」',
+  'パク「このせかいの どうぶつたちは えいごで おはなしするよ。ぼくたちが てつだうね！」',
   'ミミ「でもね、わたしたち、えいごを まちがえちゃうことも あるの…」',
   'だから きみの でばん！ ただしい えいごを いっている チャムズを みぬいて、じけんを かいけつしよう！',
 ];
@@ -55,7 +52,7 @@ const PROLOGUE = [
 // ═══════════════════════════════════════════════════════════
 // 事件データ
 //   step.type 'ask'    = なんて いえばいい？（チャムズが英語を提案 → 正しい英語を選ぶ）
-//   step.type 'listen' = なんて いってた？（住人の英語を聞いて → 正しい意味を選ぶ）
+//   step.type 'listen' = なんて いってた？（動物の英語を聞いて → 正しい意味を選ぶ）
 //   options は実行時にチャムズ3人へランダムに割り当てられる
 // ═══════════════════════════════════════════════════════════
 const CASES = [
@@ -63,83 +60,83 @@ const CASES = [
   // ─────────── 事件1 ───────────
   {
     id:'honey', title:'きえた はちみつ', emoji:'🍯', diff:1,
-    client:'mushroom',
+    client:'squirrel',
     intro:[
-      'たいへん たいへん！ キノコさんが かけこんできた！',
-      'キノコさん「たいせつな はちみつが きえちゃったの！ めいたんてい、さがして！」',
+      'たいへん たいへん！ りすさんが かけこんできた！',
+      'りすさん「たいせつな はちみつが きえちゃったの！ めいたんてい、さがして！」',
       'よし、ききこみ かいし！ もりの みんなに はなしを きこう！',
     ],
     steps:[
       {
-        type:'ask', witness:'slime',
-        scene:'まずは スライムくんに あいさつしよう！',
+        type:'ask', witness:'rabbit',
+        scene:'まずは うさちゃんに あいさつしよう！',
         question:'「こんにちは」って えいごで なんて いう？',
         options:[
           { text:'Hello!',      ok:true  },
           { text:'Good night!', ok:false },
           { text:'Banana!',     ok:false },
         ],
-        reply:{ en:'Hello! I saw someone big... It had black wings!', jp:'こんにちは！おおきな だれかを みたよ…くろい つばさが あったんだ！' },
-        clue:{ icon:'🖤', jp:'はんにんには くろい つばさが ある' },
+        reply:{ en:'Hello! I saw someone big and brown!', jp:'こんにちは！おおきくて ちゃいろい だれかを みたよ！' },
+        clue:{ icon:'🟤', jp:'はんにんは おおきくて ちゃいろい' },
       },
       {
-        type:'listen', witness:'bat',
-        scene:'コウモリくんに はなしを きこう。よーく きいてね！',
+        type:'listen', witness:'bear',
+        scene:'くまくんに はなしを きこう。よーく きいてね！',
         witnessSays:{ en:'I like honey very much!', jp:null },
-        question:'コウモリくんは なんて いった？',
+        question:'くまくんは なんて いった？',
         options:[
           { text:'「はちみつが だいすき」って いった', ok:true  },
           { text:'「はちみつは きらい」って いった',   ok:false },
           { text:'「りんごが すき」って いった',       ok:false },
         ],
         reply:{ en:'Yes! Honey is yummy!', jp:'そうだよ！はちみつは おいしいよね！' },
-        clue:{ icon:'🍯', jp:'コウモリくんは はちみつが だいすき' },
+        clue:{ icon:'🍯', jp:'くまくんは はちみつが だいすき' },
       },
       {
-        type:'ask', witness:'stormBird',
-        scene:'そらの うえから みていた とりさんが きた！おれいを いってから きこう。「ありがとう」は？',
+        type:'ask', witness:'bird',
+        scene:'そらの うえから みていた ことりちゃんが きた！おれいを いってから きこう。',
         question:'「ありがとう」って えいごで なんて いう？',
         options:[
           { text:'Thank you!', ok:true  },
           { text:"I'm sorry!", ok:false },
           { text:'Dog!',       ok:false },
         ],
-        reply:{ en:'You\'re welcome! I saw the bat fly to the honey house at night!', jp:'どういたしまして！よるに コウモリくんが はちみつのいえに とんでいくのを みたよ！' },
-        clue:{ icon:'🌙', jp:'よる、コウモリくんが はちみつのいえへ とんでいった' },
+        reply:{ en:'You\'re welcome! I saw the bear go to the honey house at night!', jp:'どういたしまして！よるに くまくんが はちみつのいえに いくのを みたよ！' },
+        clue:{ icon:'🌙', jp:'よる、くまくんが はちみつのいえへ いった' },
       },
     ],
     deduce:{
       question:'てがかりが そろった！ はちみつを たべたのは… だれだ！？',
       suspects:[
-        { res:'bat',   ok:true  },
-        { res:'crab',  ok:false },
-        { res:'slime', ok:false },
+        { res:'bear',    ok:true  },
+        { res:'penguin', ok:false },
+        { res:'rabbit',  ok:false },
       ],
-      hint:'くろい つばさ… はちみつが だいすき… よるに とんでいった…',
+      hint:'おおきくて ちゃいろい… はちみつが だいすき… よるに いった…',
     },
     resolve:[
-      'コウモリくん「I\'m sorry... とっても おなかが すいてたんだ…」',
-      'キノコさん「そうだったのね。じゃあ こんどからは いっしょに たべましょ！」',
+      'くまくん「I\'m sorry... とっても おなかが すいてたんだ…」',
+      'りすさん「そうだったのね。じゃあ こんどからは いっしょに たべましょ！」',
       'みんなで はちみつを わけっこ して なかなおり！ めでたし めでたし！',
     ],
   },
 
   // ─────────── 事件2 ───────────
   {
-    id:'jelly', title:'まいごの クラゲちゃん', emoji:'🪼', diff:1,
-    client:'seaKing',
+    id:'dolphin', title:'まいごの いるかちゃん', emoji:'🐬', diff:1,
+    client:'turtle',
     intro:[
-      'うみのおうさまが しんぱいそうに やってきた。',
-      'うみのおうさま「クラゲちゃんが まいごに なってしまった！ さがしてくれ！」',
-      'クラゲちゃんは どこに いるんだろう？ ききこみ かいし！',
+      'うみの ちょうろう、かめじいさんが しんぱいそうに やってきた。',
+      'かめじいさん「いるかちゃんが まいごに なってしまった！ さがしてくれ！」',
+      'いるかちゃんは どこに いるんだろう？ ききこみ かいし！',
     ],
     steps:[
       {
-        type:'ask', witness:'crab',
-        scene:'カニさんに クラゲちゃんの ばしょを きこう！',
-        question:'「クラゲちゃんは どこ？」って えいごで なんて きく？',
+        type:'ask', witness:'penguin',
+        scene:'ぺんぎんくんに いるかちゃんの ばしょを きこう！',
+        question:'「いるかちゃんは どこ？」って えいごで なんて きく？',
         options:[
-          { text:'Where is Jelly?',   ok:true  },
+          { text:'Where is Dolphin?', ok:true  },
           { text:'What time is it?',  ok:false },
           { text:"I'm hungry!",       ok:false },
         ],
@@ -147,20 +144,20 @@ const CASES = [
         clue:{ icon:'🪨', jp:'おおきな いわの ちかくに いる' },
       },
       {
-        type:'listen', witness:'fishKnight',
-        scene:'さかなのきしも なにか しってるみたい。よーく きいてね！',
+        type:'listen', witness:'cat',
+        scene:'ねこちゃんも なにか しってるみたい。よーく きいてね！',
         witnessSays:{ en:'She has a pink ribbon!', jp:null },
-        question:'さかなのきしは なんて いった？',
+        question:'ねこちゃんは なんて いった？',
         options:[
           { text:'「ピンクの リボンを つけてる」って いった', ok:true  },
           { text:'「あおい ぼうしを かぶってる」って いった', ok:false },
           { text:'「おなかが すいた」って いった',             ok:false },
         ],
         reply:{ en:'Yes! A cute pink ribbon!', jp:'そう！かわいい ピンクの リボンだよ！' },
-        clue:{ icon:'🎀', jp:'クラゲちゃんは ピンクの リボンを つけている' },
+        clue:{ icon:'🎀', jp:'いるかちゃんは ピンクの リボンを つけている' },
       },
       {
-        type:'ask', witness:'jellyfish',
+        type:'ask', witness:'dolphin',
         scene:'おおきな いわの ちかくに ピンクのリボンの こが いた！こえを かけよう！',
         question:'「だいじょうぶ？」って えいごで なんて いう？',
         options:[
@@ -169,21 +166,21 @@ const CASES = [
           { text:'Cat!',         ok:false },
         ],
         reply:{ en:'Thank you! I was so scared!', jp:'ありがとう！とっても こわかったの！' },
-        clue:{ icon:'😢', jp:'クラゲちゃんを はっけん！こわがっている' },
+        clue:{ icon:'😢', jp:'いるかちゃんを はっけん！こわがっている' },
       },
     ],
     deduce:{
-      question:'クラゲちゃんが みつかった ばしょは… どこだった！？',
+      question:'いるかちゃんが みつかった ばしょは… どこだった！？',
       suspects:[
         { icon:'🪨', name:'おおきな いわの ちかく', ok:true  },
         { icon:'🌊', name:'ふかい うみの そこ',     ok:false },
         { icon:'⛵', name:'ふねの うえ',             ok:false },
       ],
-      hint:'カニさんは どこで みたって いってたかな…？',
+      hint:'ぺんぎんくんは どこで みたって いってたかな…？',
     },
     resolve:[
-      'うみのおうさま「おお！クラゲちゃん！ぶじで よかった！」',
-      'クラゲちゃん「Thank you, great detective!（めいたんてい、ありがとう！）」',
+      'かめじいさん「おお！いるかちゃん！ぶじで よかった！」',
+      'いるかちゃん「Thank you, great detective!（めいたんてい、ありがとう！）」',
       'うみに えがおが もどった！ さすが めいたんてい！',
     ],
   },
@@ -191,41 +188,41 @@ const CASES = [
   // ─────────── 事件3 ───────────
   {
     id:'hat', title:'おとしものの ぼうし', emoji:'🎩', diff:2,
-    client:'leafBug',
+    client:'bird',
     intro:[
-      'はっぱちゃんが なにかを もって やってきた。',
-      'はっぱちゃん「もりで すてきな ぼうしを ひろったの。おとしぬしを さがして！」',
+      'ことりちゃんが なにかを もって やってきた。',
+      'ことりちゃん「もりで すてきな ぼうしを ひろったの。おとしぬしを さがして！」',
       'この ぼうしは だれの ものだろう？ ききこみ かいし！',
     ],
     steps:[
       {
-        type:'ask', witness:'spider',
-        scene:'クモちゃんに ぼうしの ことを きいてみよう！',
+        type:'ask', witness:'cat',
+        scene:'ねこちゃんに ぼうしの ことを きいてみよう！',
         question:'「これは だれの ぼうし？」って えいごで なんて きく？',
         options:[
           { text:'Whose hat is this?',  ok:true  },
           { text:'How much is this?',   ok:false },
           { text:'Apple!',              ok:false },
         ],
-        reply:{ en:"It's not mine. Skeleton always wears a hat!", jp:'わたしのじゃ ないわ。ガイコツさんは いつも ぼうしを かぶってるわよ！' },
-        clue:{ icon:'💀', jp:'ガイコツさんは いつも ぼうしを かぶっている' },
+        reply:{ en:"It's not mine. Fox always wears a hat!", jp:'わたしのじゃ ないわ。きつねくんは いつも ぼうしを かぶってるわよ！' },
+        clue:{ icon:'🦊', jp:'きつねくんは いつも ぼうしを かぶっている' },
       },
       {
-        type:'listen', witness:'skeleton',
-        scene:'ガイコツさんに あいにいこう。よーく きいてね！',
+        type:'listen', witness:'fox',
+        scene:'きつねくんに あいにいこう。よーく きいてね！',
         witnessSays:{ en:'I lost my hat yesterday. It is red.', jp:null },
-        question:'ガイコツさんは なんて いった？',
+        question:'きつねくんは なんて いった？',
         options:[
           { text:'「きのう あかい ぼうしを なくした」って いった', ok:true  },
           { text:'「きょう あおい くつを かった」って いった',     ok:false },
           { text:'「ぼうしは もってない」って いった',             ok:false },
         ],
-        reply:{ en:"Yes... I miss my red hat.", jp:'そうなんだ…あかい ぼうしが ないと さみしいよ。' },
-        clue:{ icon:'🔴', jp:'ガイコツさんは きのう「あかい ぼうし」を なくした' },
+        reply:{ en:'Yes... I miss my red hat.', jp:'そうなんだ…あかい ぼうしが ないと さみしいよ。' },
+        clue:{ icon:'🔴', jp:'きつねくんは きのう「あかい ぼうし」を なくした' },
       },
       {
-        type:'ask', witness:'skeleton',
-        scene:'ひろった ぼうしは あかだった！ ガイコツさんに わたそう！',
+        type:'ask', witness:'fox',
+        scene:'ひろった ぼうしは あかだった！ きつねくんに わたそう！',
         question:'「はい、どうぞ」って えいごで なんて いう？',
         options:[
           { text:'Here you are!',  ok:true  },
@@ -233,63 +230,63 @@ const CASES = [
           { text:'Goodbye!',       ok:false },
         ],
         reply:{ en:'Wow! Thank you so much! This is my hat!', jp:'わあ！ほんとうに ありがとう！これ ぼくの ぼうしだ！' },
-        clue:{ icon:'🎩', jp:'あかい ぼうしは ガイコツさんの ものだった' },
+        clue:{ icon:'🎩', jp:'あかい ぼうしは きつねくんの ものだった' },
       },
     ],
     deduce:{
       question:'ぼうしの おとしぬしは… だれだった！？',
       suspects:[
-        { res:'skeleton', ok:true  },
-        { res:'spider',   ok:false },
-        { res:'crab',     ok:false },
+        { res:'fox',     ok:true  },
+        { res:'cat',     ok:false },
+        { res:'penguin', ok:false },
       ],
       hint:'あかい ぼうしを なくしたのは だれだったかな…？',
     },
     resolve:[
-      'ガイコツさん「Thank you! I\'m so happy!（ありがとう！うれしいよ！）」',
-      'はっぱちゃん「おとしぬしが みつかって よかった〜！」',
-      'ガイコツさんは おれいに たのしい ダンスを おどってくれた！',
+      'きつねくん「Thank you! I\'m so happy!（ありがとう！うれしいよ！）」',
+      'ことりちゃん「おとしぬしが みつかって よかった〜！」',
+      'きつねくんは おれいに たのしい ダンスを おどってくれた！',
     ],
   },
 
   // ─────────── 事件4 ───────────
   {
     id:'cake', title:'はんぶんに なった ケーキ', emoji:'🍰', diff:2,
-    client:'crab',
+    client:'cat',
     intro:[
-      'カニさんが おおあわてで やってきた！',
-      'カニさん「あした パーティーなのに、ケーキが はんぶん たべられてる〜！」',
+      'ねこちゃんが おおあわてで やってきた！',
+      'ねこちゃん「あした パーティーなのに、ケーキが はんぶん たべられてる〜！」',
       'いったい だれが たべたんだろう？ ききこみ かいし！',
     ],
     steps:[
       {
-        type:'ask', witness:'slime',
-        scene:'あまいもの だいすきな スライムくんに きいてみよう！',
+        type:'ask', witness:'rabbit',
+        scene:'あまいもの だいすきな うさちゃんに きいてみよう！',
         question:'「ケーキは すき？」って えいごで なんて きく？',
         options:[
           { text:'Do you like cake?', ok:true  },
           { text:'Can you fly?',      ok:false },
           { text:'Good morning!',     ok:false },
         ],
-        reply:{ en:"Yes, I do! But I didn't eat it. I saw green footprints!", jp:'すきだよ！でも ぼくじゃないよ。みどりの あしあとを みたんだ！' },
-        clue:{ icon:'👣', jp:'ケーキのそばに みどりの あしあとが あった' },
+        reply:{ en:"Yes, I do! But I didn't eat it. I saw black and white footprints!", jp:'すきだよ！でも わたしじゃないよ。しろと くろの あしあとを みたの！' },
+        clue:{ icon:'👣', jp:'ケーキのそばに しろと くろの あしあとが あった' },
       },
       {
-        type:'listen', witness:'leafBug',
-        scene:'はっぱちゃんが なにか しってるみたい。よーく きいてね！',
-        witnessSays:{ en:'The big slime loves sweets!', jp:null },
-        question:'はっぱちゃんは なんて いった？',
+        type:'listen', witness:'bird',
+        scene:'ことりちゃんが なにか しってるみたい。よーく きいてね！',
+        witnessSays:{ en:'The panda loves sweets!', jp:null },
+        question:'ことりちゃんは なんて いった？',
         options:[
-          { text:'「おおきなスライムは あまいものが だいすき」って いった', ok:true  },
-          { text:'「おおきなスライムは やさいが すき」って いった',         ok:false },
-          { text:'「コウモリくんが たべた」って いった',                     ok:false },
+          { text:'「ぱんださんは あまいものが だいすき」って いった', ok:true  },
+          { text:'「ぱんださんは やさいが すき」って いった',         ok:false },
+          { text:'「くまくんが たべた」って いった',                   ok:false },
         ],
         reply:{ en:'Yes! He eats sweets every day!', jp:'そう！まいにち あまいものを たべてるよ！' },
-        clue:{ icon:'🍬', jp:'おおきなスライムは あまいものが だいすき' },
+        clue:{ icon:'🍬', jp:'ぱんださんは あまいものが だいすき' },
       },
       {
-        type:'ask', witness:'bigSlime',
-        scene:'みどりいろの おおきなスライムに ちょくせつ きいてみよう！ゆうきを だして！',
+        type:'ask', witness:'panda',
+        scene:'しろと くろの ぱんださんに ちょくせつ きいてみよう！ゆうきを だして！',
         question:'「ケーキを たべた？」って えいごで なんて きく？',
         options:[
           { text:'Did you eat the cake?', ok:true  },
@@ -297,21 +294,21 @@ const CASES = [
           { text:'Sunny!',                ok:false },
         ],
         reply:{ en:"...Yes. I'm sorry. It was so yummy.", jp:'…うん。ごめんなさい。とっても おいしくて…' },
-        clue:{ icon:'🙇', jp:'おおきなスライムが「たべた」と はくじょうした' },
+        clue:{ icon:'🙇', jp:'ぱんださんが「たべた」と はくじょうした' },
       },
     ],
     deduce:{
       question:'ケーキを たべたのは… だれだ！？',
       suspects:[
-        { res:'bigSlime', ok:true  },
-        { res:'slime',    ok:false },
-        { res:'bat',      ok:false },
+        { res:'panda',  ok:true  },
+        { res:'rabbit', ok:false },
+        { res:'bear',   ok:false },
       ],
-      hint:'みどりの あしあと… あまいもの だいすき… はくじょう…',
+      hint:'しろと くろの あしあと… あまいもの だいすき… はくじょう…',
     },
     resolve:[
-      'おおきなスライム「I\'m sorry...（ごめんなさい…）」',
-      'カニさん「しょうがないなあ。じゃあ いっしょに あたらしい ケーキを つくろう！」',
+      'ぱんださん「I\'m sorry...（ごめんなさい…）」',
+      'ねこちゃん「しょうがないなあ。じゃあ いっしょに あたらしい ケーキを つくろう！」',
       '「Let\'s make a cake together!」みんなで ケーキづくり！パーティーは だいせいこう！',
     ],
   },
@@ -319,41 +316,41 @@ const CASES = [
   // ─────────── 事件5 ───────────
   {
     id:'sound', title:'よなかの ものおと', emoji:'🎸', diff:3,
-    client:'giantSpider',
+    client:'rabbit',
     intro:[
-      'クモのおかあさんが ねむそうな かおで やってきた。',
-      'クモのおかあさん「まよなかに へんな おとが して ねむれないの…しらべて！」',
+      'うさちゃんが ねむそうな かおで やってきた。',
+      'うさちゃん「まよなかに へんな おとが して ねむれないの…しらべて！」',
       'よなかの ものおとの しょうたいは なんだろう？ ききこみ かいし！',
     ],
     steps:[
       {
-        type:'ask', witness:'stormBird',
-        scene:'よふかしの とりさんに きいてみよう！',
+        type:'ask', witness:'owl',
+        scene:'よるに おきている ふくろうはかせに きいてみよう！',
         question:'「なにか きこえた？」って えいごで なんて きく？',
         options:[
           { text:'Did you hear anything?', ok:true  },
           { text:'Are you sleepy?',        ok:false },
           { text:'Melon!',                 ok:false },
         ],
-        reply:{ en:'Yes! I heard music at night!', jp:'うん！よるに おんがくが きこえたよ！' },
+        reply:{ en:'Yes! I heard music at night!', jp:'うむ！よるに おんがくが きこえたぞ！' },
         clue:{ icon:'🎵', jp:'よなかに「おんがく」が きこえていた' },
       },
       {
-        type:'listen', witness:'darkCloud',
-        scene:'そらの くもくんも なにか みたみたい。よーく きいてね！',
-        witnessSays:{ en:'The knight can play the guitar!', jp:null },
-        question:'くもくんは なんて いった？',
+        type:'listen', witness:'bird',
+        scene:'ことりちゃんも なにか みたみたい。よーく きいてね！',
+        witnessSays:{ en:'The dog can play the guitar!', jp:null },
+        question:'ことりちゃんは なんて いった？',
         options:[
-          { text:'「きしは ギターが ひける」って いった',     ok:true  },
-          { text:'「きしは うたが へた」って いった',         ok:false },
-          { text:'「きしは ダンスが とくい」って いった',     ok:false },
+          { text:'「いぬくんは ギターが ひける」って いった',   ok:true  },
+          { text:'「いぬくんは うたが へた」って いった',       ok:false },
+          { text:'「いぬくんは ダンスが とくい」って いった',   ok:false },
         ],
         reply:{ en:'Yes! He is a good guitar player!', jp:'そう！ギターが じょうずなんだよ！' },
-        clue:{ icon:'🎸', jp:'よろいのきしは ギターが ひける' },
+        clue:{ icon:'🎸', jp:'いぬくんは ギターが ひける' },
       },
       {
-        type:'ask', witness:'shadowKnight',
-        scene:'よろいのきしに かくにん しよう！',
+        type:'ask', witness:'dog',
+        scene:'いぬくんに かくにん しよう！',
         question:'「ギターを ひける？」って えいごで なんて きく？',
         options:[
           { text:'Can you play the guitar?', ok:true  },
@@ -361,37 +358,37 @@ const CASES = [
           { text:'Pencil!',                  ok:false },
         ],
         reply:{ en:'Yes, I can! I practice at night... Sorry, was it loud?', jp:'ひけるよ！よるに れんしゅう してたんだ…うるさかった？ごめんね。' },
-        clue:{ icon:'🌙', jp:'きしが よなかに ギターの れんしゅうを していた' },
+        clue:{ icon:'🌙', jp:'いぬくんが よなかに ギターの れんしゅうを していた' },
       },
     ],
     deduce:{
       question:'よなかの ものおとの しょうたいは… なんだ！？',
       suspects:[
-        { icon:'🎸', name:'きしの ギターの れんしゅう', ok:true  },
-        { icon:'👻', name:'おばけの こえ',               ok:false },
-        { icon:'⚡', name:'かみなりの おと',             ok:false },
+        { icon:'🎸', name:'いぬくんの ギターの れんしゅう', ok:true  },
+        { icon:'👻', name:'おばけの こえ',                   ok:false },
+        { icon:'⚡', name:'かみなりの おと',                 ok:false },
       ],
       hint:'おんがく… ギター… よなかの れんしゅう…',
     },
     resolve:[
-      'よろいのきし「I\'m sorry! これからは おひるに れんしゅうするよ！」',
-      'クモのおかあさん「よかった〜。これで ぐっすり ねむれるわ♪」',
-      'きしは おわびに ミニコンサートを ひらいた！すてきな おんがくかい に なった！',
+      'いぬくん「I\'m sorry! これからは おひるに れんしゅうするよ！」',
+      'うさちゃん「よかった〜。これで ぐっすり ねむれるわ♪」',
+      'いぬくんは おわびに ミニコンサートを ひらいた！すてきな おんがくかいに なった！',
     ],
   },
 
   // ─────────── 事件6 ───────────
   {
     id:'egg', title:'ふしぎな たまご', emoji:'🥚', diff:3,
-    client:'stormBird',
+    client:'bird',
     intro:[
-      'とりさんが くびを かしげながら やってきた。',
-      'とりさん「すの なかの たまごが 1つ ふえてる！？ だれかの たまごが まざったみたい！」',
+      'ことりちゃんが くびを かしげながら やってきた。',
+      'ことりちゃん「すの なかの たまごが 1つ ふえてる！？ だれかの たまごが まざったみたい！」',
       'ふしぎな たまごの もちぬしを さがそう！ ききこみ かいし！',
     ],
     steps:[
       {
-        type:'ask', witness:'stormBird',
+        type:'ask', witness:'bird',
         scene:'まずは たまごの かずを かくにん しよう！',
         question:'「たまごは いくつ？」って えいごで なんて きく？',
         options:[
@@ -403,20 +400,20 @@ const CASES = [
         clue:{ icon:'🔢', jp:'たまごが 3つ → 4つに ふえていた' },
       },
       {
-        type:'listen', witness:'fishKnight',
-        scene:'うみから きた さかなのきしが なにか しってるみたい。よーく きいてね！',
-        witnessSays:{ en:'The sea king lost a big blue egg!', jp:null },
-        question:'さかなのきしは なんて いった？',
+        type:'listen', witness:'dolphin',
+        scene:'うみから きた いるかちゃんが なにか しってるみたい。よーく きいてね！',
+        witnessSays:{ en:'The turtle lost a big blue egg!', jp:null },
+        question:'いるかちゃんは なんて いった？',
         options:[
-          { text:'「うみのおうさまが おおきな あおいたまごを なくした」って いった', ok:true  },
-          { text:'「うみのおうさまが ちいさな あかいたまごを かった」って いった',   ok:false },
-          { text:'「うみのおうさまは たまごが きらい」って いった',                 ok:false },
+          { text:'「かめじいさんが おおきな あおいたまごを なくした」って いった', ok:true  },
+          { text:'「かめじいさんが ちいさな あかいたまごを かった」って いった',   ok:false },
+          { text:'「かめじいさんは たまごが きらい」って いった',                 ok:false },
         ],
         reply:{ en:'Yes! He is looking for it everywhere!', jp:'そう！あちこち さがしてるんだよ！' },
-        clue:{ icon:'🔵', jp:'うみのおうさまが「おおきくて あおい たまご」を なくした' },
+        clue:{ icon:'🔵', jp:'かめじいさんが「おおきくて あおい たまご」を なくした' },
       },
       {
-        type:'ask', witness:'stormBird',
+        type:'ask', witness:'bird',
         scene:'すの たまごを よくみて みよう！どれか 1つだけ ちがうみたい…',
         question:'「おおきくて あおいのは どれ？」って えいごで なんて きく？',
         options:[
@@ -431,16 +428,16 @@ const CASES = [
     deduce:{
       question:'ふしぎな たまごの もちぬしは… だれだ！？',
       suspects:[
-        { res:'seaKing', ok:true  },
-        { res:'spider',  ok:false },
-        { res:'slime',   ok:false },
+        { res:'turtle', ok:true  },
+        { res:'cat',    ok:false },
+        { res:'rabbit', ok:false },
       ],
       hint:'おおきくて あおい たまごを なくしたのは だれだったかな…？',
     },
     resolve:[
-      'うみのおうさま「おお！わしの たまごじゃ！かぜで とばされて しまったのじゃ！」',
-      'うみのおうさま「Thank you, great detective!（めいたんてい、ありがとう！）」',
-      'たまごは ぶじ うみへ かえった。とりさんも あんしん！',
+      'かめじいさん「おお！わしの たまごじゃ！なみに さらわれて しまったのじゃ！」',
+      'かめじいさん「Thank you, great detective!（めいたんてい、ありがとう！）」',
+      'たまごは ぶじ うみへ かえった。ことりちゃんも あんしん！',
     ],
   },
 ];

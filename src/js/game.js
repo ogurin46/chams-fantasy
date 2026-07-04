@@ -34,6 +34,11 @@ function speak(text, opt = {}, onEnd = null) {
   if (utt.lang.startsWith('en')) {
     const v = pickVoice('en', opt.female ?? true);
     if (v) utt.voice = v;
+  } else if (utt.lang.startsWith('ja')) {
+    const vs = (cachedVoices.length ? cachedVoices : speechSynthesis.getVoices())
+      .filter(v => v.lang && v.lang.replace('_','-').startsWith('ja'));
+    const v = vs.find(x => /Google/i.test(x.name)) || vs[0];
+    if (v) utt.voice = v;
   }
   let done = false;
   const fin = () => { if (!done) { done = true; onEnd?.(); } };
@@ -252,8 +257,11 @@ function showStory(lines, onDone) {
   showOverlay('story'); advanceStory();
 }
 function advanceStory() {
-  if (!storyQueue.length) { hideOverlay('story'); const cb = storyDone; storyDone = null; cb?.(); return; }
-  $('story-text').textContent = storyQueue.shift();
+  if (!storyQueue.length) { hideOverlay('story'); stopSpeak(); const cb = storyDone; storyDone = null; cb?.(); return; }
+  const line = storyQueue.shift();
+  $('story-text').textContent = line;
+  // ストーリーは音声でも読み上げる（日本語）
+  speak(line, { lang:'ja-JP', pitch:1.05, rate:1.0 });
 }
 
 // ─── 事件簿（ホーム画面） ───
@@ -357,22 +365,51 @@ function showStep(idx) {
   const options   = [...step.options].sort(() => Math.random() - 0.5);
   const assign = chamOrder.map((ck, i) => ({ chamKey: ck, option: options[i] }));
 
+  // チャムズのセリフを読み上げる（タップで何度でも聞ける）
+  const speakChamLine = (a) => {
+    if (step.type === 'ask') {
+      speakCham(a.chamKey, a.option.text); // 英語（チャムズの声で）
+    } else {
+      const v = CHAMS[a.chamKey].voice;
+      speak(a.option.text, { lang:'ja-JP', pitch:v.pitch, rate:1.0 }); // 日本語
+    }
+  };
+
+  let selected = null;
+  const confirmBtn = $('btn-cham-confirm');
+  confirmBtn.classList.add('hidden');
+
   const row = $('cham-row');
   row.innerHTML = '';
   assign.forEach(a => {
     const cham = CHAMS[a.chamKey];
-    const card = document.createElement('button');
+    const card = document.createElement('div');
     card.className = 'cham-card';
     card.style.setProperty('--cham-color', cham.color);
     card.innerHTML = `
-      <div class="cham-bubble">${a.option.text}</div>
+      <div class="cham-bubble">${a.option.text}<span class="cham-play">🔊</span></div>
       <img src="${cham.img}" class="cham-img" alt="${cham.name}">
       <span class="cham-name">${cham.name}</span>`;
-    card.addEventListener('click', () => onChamPick(card, a, step));
+    // タップ = セリフを再生（何度でも）＋ このこを選ぶ
+    card.addEventListener('click', () => {
+      speakChamLine(a);
+      if (card.classList.contains('cham-off')) return; // はずれ済みは選べない（再生のみ）
+      selected = { card, a };
+      document.querySelectorAll('.cham-card').forEach(c => c.classList.remove('cham-selected'));
+      card.classList.add('cham-selected');
+      confirmBtn.classList.remove('hidden');
+    });
     row.appendChild(card);
   });
 
-  // 読み上げ: リスニング問題は住人のセリフ、スピーキング問題はチャムズの提案を順に
+  confirmBtn.onclick = () => {
+    if (!selected) return;
+    confirmBtn.classList.add('hidden');
+    onChamPick(selected.card, selected.a, step);
+    if (!selected.a.option.ok) selected = null;
+  };
+
+  // 最初の読み上げ: リスニング問題は住人のセリフ、スピーキング問題はチャムズの提案を順に
   setTimeout(() => {
     if (step.witnessSays) {
       speak(step.witnessSays.en, { female:true });
@@ -383,20 +420,20 @@ function showStep(idx) {
 }
 
 function onChamPick(cardEl, assign, step) {
-  if (cardEl.disabled) return;
   stopSpeak();
 
   if (!assign.option.ok) {
     // はずれ → そのチャムズはグレーアウト、もう一度選べる
     CS.misses++;
-    cardEl.disabled = true;
-    cardEl.classList.add('cham-wrong');
+    cardEl.classList.remove('cham-selected');
+    cardEl.classList.add('cham-wrong', 'cham-off');
     showToast('🤔', 'うーん、ちがうみたい…もういちど！');
     return;
   }
 
   // せいかい！
-  document.querySelectorAll('.cham-card').forEach(c => c.disabled = true);
+  document.querySelectorAll('.cham-card').forEach(c => c.classList.add('cham-off'));
+  cardEl.classList.remove('cham-selected');
   cardEl.classList.add('cham-correct');
   showToast('⭕', 'めいすいり！');
 

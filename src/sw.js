@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'chams-tantei-v2';
+const CACHE = 'chams-tantei-v3';
 
 // オフライン動作に必要な全アセット
 const PRECACHE_ASSETS = [
@@ -18,20 +18,18 @@ const PRECACHE_ASSETS = [
   './img/mimi.png',
   './img/icon-192.png',
   './img/icon-512.png',
-  './img/enemy_slime.png',
-  './img/enemy_mushroom.png',
-  './img/enemy_leafBug.png',
-  './img/enemy_darkSlime.png',
-  './img/enemy_bat.png',
-  './img/enemy_spider.png',
-  './img/enemy_skeleton.png',
-  './img/enemy_giantSpider.png',
-  './img/enemy_crab.png',
-  './img/enemy_jellyfish.png',
-  './img/enemy_fishKnight.png',
-  './img/enemy_seaKing.png',
-  './img/enemy_stormBird.png',
-  './img/enemy_darkCloud.png',
+  './img/animal_rabbit.png',
+  './img/animal_squirrel.png',
+  './img/animal_bear.png',
+  './img/animal_bird.png',
+  './img/animal_fox.png',
+  './img/animal_owl.png',
+  './img/animal_penguin.png',
+  './img/animal_dolphin.png',
+  './img/animal_turtle.png',
+  './img/animal_cat.png',
+  './img/animal_dog.png',
+  './img/animal_panda.png',
 ];
 
 self.addEventListener('install', e => {

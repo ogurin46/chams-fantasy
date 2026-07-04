@@ -412,6 +412,22 @@ h2 {
   font-size: 0.75rem; font-weight: 900;
   color: var(--cham-color, #fff);
 }
+.cham-play {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+.cham-card.cham-selected {
+  border-width: 4px;
+  box-shadow: 0 0 18px var(--cham-color, #fff);
+  transform: translateY(-4px);
+}
+.cham-confirm {
+  margin-bottom: max(12px, env(safe-area-inset-bottom));
+  animation: overlayIn 0.25s ease-out;
+  flex-shrink: 0;
+}
 .cham-card.cham-wrong {
   opacity: 0.35; filter: grayscale(0.8);
   animation: chamShake 0.35s ease-out;
