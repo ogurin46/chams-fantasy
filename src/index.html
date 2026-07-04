@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="img/icon-192.png">
   <title>めいたんてい チャムズ 〜えいごじけんぼ〜</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <div id="app">
@@ -93,6 +93,7 @@
       </div>
       <div id="witness-says-wrap" class="hidden">
         <div id="witness-says" class="witness-says"></div>
+        <div id="witness-says-jp" class="witness-says-jp"></div>
         <button id="btn-replay-says" class="replay-btn">🔊 もういちど きく</button>
       </div>
     </div>
@@ -147,9 +148,9 @@
       <div class="solved-stamp">じけん<br>かいけつ！</div>
       <p id="solved-title-case" class="solved-case-name"></p>
       <p id="solved-stars" class="solved-stars"></p>
-      <p class="solved-phrases-label">📝 きょう おぼえた えいご</p>
-      <div id="solved-phrases"></div>
       <button id="btn-solved-ok" class="big-btn">やったー！ ▶</button>
+      <p class="solved-phrases-label">📝 きょう おぼえた えいご（タップで きけるよ）</p>
+      <div id="solved-phrases"></div>
     </div>
   </div>
 
@@ -194,8 +195,8 @@
   </div>
 
 </div>
-<script src="js/data.js?v=3"></script>
-<script src="js/game.js?v=3"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/game.js?v=4"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

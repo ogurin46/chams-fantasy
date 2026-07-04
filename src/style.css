@@ -583,7 +583,6 @@ h2 {
 }
 
 /* じけんかいけつ */
-.solved-content { overflow: hidden; }
 #solved-confetti {
   position: absolute; inset: 0;
   pointer-events: none; overflow: hidden;
@@ -618,7 +617,26 @@ h2 {
 #solved-phrases {
   width: 100%;
   display: flex; flex-direction: column; gap: 6px;
+  max-height: 30vh;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
 }
+
+/* 日本語訳の字幕 */
+.witness-says-jp {
+  font-size: 0.8rem; font-weight: bold; color: var(--plum-l);
+  background: rgba(255,255,255,0.75);
+  border-radius: 10px; padding: 3px 12px;
+  max-width: 94%; text-align: center;
+  min-height: 1.3em;
+}
+.cham-jp {
+  font-size: 0.68rem; font-weight: bold; color: var(--plum-l);
+  min-height: 2.2em; line-height: 1.25;
+  display: flex; align-items: center; text-align: center;
+  padding: 0 2px;
+}
+.note-texts { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+.note-jp { font-size: 0.72rem; color: var(--plum-l); font-weight: bold; }
 
 /* ランクアップ */
 .rank-label { font-size: 1.2rem; font-weight: 900; color: var(--gold); }

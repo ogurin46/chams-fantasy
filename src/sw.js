@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'chams-tantei-v4';
+const CACHE = 'chams-tantei-v5';
 
 // オフライン動作に必要な全アセット
 const PRECACHE_ASSETS = [

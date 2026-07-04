@@ -327,7 +327,12 @@ function renderNote() {
     G.phrases.forEach(en => {
       const row = document.createElement('button');
       row.className = 'note-row';
-      row.innerHTML = `<span class="note-en">${en}</span><span class="note-play">🔊</span>`;
+      row.innerHTML = `
+        <span class="note-texts">
+          <span class="note-en">${en}</span>
+          <span class="note-jp">${EN_JP[en] || ''}</span>
+        </span>
+        <span class="note-play">🔊</span>`;
       row.addEventListener('click', () => speak(en, { female:true }));
       list.appendChild(row);
     });
@@ -370,11 +375,12 @@ function showStep(idx) {
   $('witness-name').textContent = w.name;
   $('scene-text').textContent = step.scene;
 
-  // 住人のセリフ（リスニング問題）
+  // 住人のセリフ（リスニング問題）: 英語＋日本語訳
   const saysWrap = $('witness-says-wrap');
   if (step.witnessSays) {
     saysWrap.classList.remove('hidden');
     $('witness-says').textContent = step.witnessSays.en;
+    $('witness-says-jp').textContent = step.witnessSays.jp || EN_JP[step.witnessSays.en] || '';
     $('btn-replay-says').onclick = () => speak(step.witnessSays.en, { female:true });
   } else {
     saysWrap.classList.add('hidden');
@@ -415,11 +421,13 @@ function showStep(idx) {
         <span class="cham-line">${a.option.text}</span>
         <span class="cham-hidden-mark">🎧</span>
       </div>
+      <span class="cham-jp"></span>
       <img src="${cham.img}" class="cham-img" alt="${cham.name}">
       <span class="cham-name">${cham.name}</span>`;
-    // タップ = セリフを再生（何度でも）＋ このこを選ぶ
+    // タップ = セリフを再生（何度でも）＋ 日本語訳を表示 ＋ このこを選ぶ
     card.addEventListener('click', () => {
       speakChamLine(a);
+      card.querySelector('.cham-jp').textContent = EN_JP[a.option.text] || '';
       if (card.classList.contains('cham-off')) return; // はずれ済みは選べない（再生のみ）
       selected = { card, a };
       document.querySelectorAll('.cham-card').forEach(c => c.classList.remove('cham-selected'));
@@ -479,8 +487,8 @@ function onChamPick(cardEl, assign, step) {
     const saysWrap = $('witness-says-wrap');
     saysWrap.classList.remove('hidden');
     $('witness-says').textContent = step.reply.en;
+    $('witness-says-jp').textContent = step.reply.jp || '';
     $('btn-replay-says').onclick = () => speak(step.reply.en, { female:true });
-    $('scene-text').textContent = step.reply.jp;
     CS.casePhrases.push(step.reply.en);
     speak(step.reply.en, { female:true }, () => {
       setTimeout(showClueGet, 500);
@@ -563,7 +571,11 @@ function onSolved() {
     const uniq = [...new Set(CS.casePhrases)];
     list.innerHTML = uniq.map(en =>
       `<button class="note-row solved-phrase" data-en="${en.replace(/"/g,'&quot;')}">
-        <span class="note-en">${en}</span><span class="note-play">🔊</span>
+        <span class="note-texts">
+          <span class="note-en">${en}</span>
+          <span class="note-jp">${EN_JP[en] || ''}</span>
+        </span>
+        <span class="note-play">🔊</span>
       </button>`).join('');
     list.querySelectorAll('.solved-phrase').forEach(b =>
       b.addEventListener('click', () => speak(b.dataset.en, { female:true })));
@@ -647,6 +659,11 @@ function startPrologue() {
 
 // ─── 初期化 ───
 window.addEventListener('DOMContentLoaded', () => {
+  // 事件データの返答文の日本語訳も辞書に取り込む（ノート表示用）
+  CASES.forEach(c => c.steps.forEach(s => {
+    if (s.reply?.en && s.reply.jp && !EN_JP[s.reply.en]) EN_JP[s.reply.en] = s.reply.jp;
+    if (s.witnessSays?.en && s.witnessSays.jp && !EN_JP[s.witnessSays.en]) EN_JP[s.witnessSays.en] = s.witnessSays.jp;
+  }));
   loadAllSlots();
   initEvents();
   renderTitle();
