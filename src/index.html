@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="img/icon-192.png">
   <title>めいたんてい チャムズ 〜えいごじけんぼ〜</title>
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <div id="app">
@@ -100,7 +100,10 @@
     <p id="scene-text"></p>
     <p id="case-question"></p>
 
-    <p class="cham-row-label">🔍 チャムズを タップすると きけるよ！ただしいのは だれ？</p>
+    <div class="cham-row-head">
+      <p class="cham-row-label">🔍 チャムズを タップして きいてみよう！</p>
+      <button id="btn-show-text" class="show-text-btn">🔤 もじを みる</button>
+    </div>
     <div id="cham-row"></div>
     <button id="btn-cham-confirm" class="big-btn cham-confirm hidden">このこが ただしい！ ▶</button>
   </section>
@@ -191,8 +194,8 @@
   </div>
 
 </div>
-<script src="js/data.js?v=2"></script>
-<script src="js/game.js?v=2"></script>
+<script src="js/data.js?v=3"></script>
+<script src="js/game.js?v=3"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

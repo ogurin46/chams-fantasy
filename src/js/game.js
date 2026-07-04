@@ -65,7 +65,28 @@ function speakSequence(items, doneCb) {
   };
   next();
 }
-function stopSpeak() { _speakSeqToken++; if (window.speechSynthesis) speechSynthesis.cancel(); }
+// ─── ストーリー音声（MiniMax TTS製・人の声）。無ければWeb Speech APIにフォールバック ───
+let _storyAudio = null;
+function playStoryLine(prefix, idx, text) {
+  stopStoryAudio();
+  const fallback = () => speak(text, { lang:'ja-JP', pitch:1.05, rate:1.0 });
+  if (!prefix) { fallback(); return; }
+  try {
+    const a = new Audio(`audio/story/${prefix}_${idx}.mp3`);
+    _storyAudio = a;
+    const p = a.play();
+    if (p && p.catch) p.catch(fallback);
+  } catch (e) { fallback(); }
+}
+function stopStoryAudio() {
+  if (_storyAudio) { try { _storyAudio.pause(); } catch (e) {} _storyAudio = null; }
+}
+
+function stopSpeak() {
+  _speakSeqToken++;
+  stopStoryAudio();
+  if (window.speechSynthesis) speechSynthesis.cancel();
+}
 
 // ─── セーブ（3スロット） ───
 const SAVE_KEY = 'chams_tantei_v1';
@@ -251,17 +272,18 @@ function renderSaveSelect() {
 }
 
 // ─── ストーリーオーバーレイ ───
-let storyQueue = [], storyDone = null;
-function showStory(lines, onDone) {
+let storyQueue = [], storyDone = null, storyPrefix = null, storyIdx = 0;
+function showStory(lines, onDone, prefix = null) {
   storyQueue = [...lines]; storyDone = onDone;
+  storyPrefix = prefix; storyIdx = 0;
   showOverlay('story'); advanceStory();
 }
 function advanceStory() {
   if (!storyQueue.length) { hideOverlay('story'); stopSpeak(); const cb = storyDone; storyDone = null; cb?.(); return; }
   const line = storyQueue.shift();
   $('story-text').textContent = line;
-  // ストーリーは音声でも読み上げる（日本語）
-  speak(line, { lang:'ja-JP', pitch:1.05, rate:1.0 });
+  // ストーリーは音声でも読み上げる（事前生成した人の声）
+  playStoryLine(storyPrefix, storyIdx++, line);
 }
 
 // ─── 事件簿（ホーム画面） ───
@@ -325,7 +347,7 @@ function startCase(caseId) {
   showScreen('case');
   $('case-header-title').textContent = `${c.emoji} ${c.title}`;
   renderClueChips();
-  showStory(c.intro, () => showStep(0));
+  showStory(c.intro, () => showStep(0), `${c.id}_intro`);
 }
 
 function renderClueChips() {
@@ -365,21 +387,23 @@ function showStep(idx) {
   const options   = [...step.options].sort(() => Math.random() - 0.5);
   const assign = chamOrder.map((ck, i) => ({ chamKey: ck, option: options[i] }));
 
-  // チャムズのセリフを読み上げる（タップで何度でも聞ける）
-  const speakChamLine = (a) => {
-    if (step.type === 'ask') {
-      speakCham(a.chamKey, a.option.text); // 英語（チャムズの声で）
-    } else {
-      const v = CHAMS[a.chamKey].voice;
-      speak(a.option.text, { lang:'ja-JP', pitch:v.pitch, rate:1.0 }); // 日本語
-    }
-  };
+  // チャムズのセリフは いつも英語（タップで何度でも聞ける）
+  const speakChamLine = (a) => speakCham(a.chamKey, a.option.text);
 
   let selected = null;
   const confirmBtn = $('btn-cham-confirm');
   confirmBtn.classList.add('hidden');
 
+  // 文字は基本非表示（きくれんしゅう）。「もじをみる」ボタンで表示できる
   const row = $('cham-row');
+  row.classList.add('lines-hidden');
+  const textBtn = $('btn-show-text');
+  textBtn.textContent = '🔤 もじを みる';
+  textBtn.onclick = () => {
+    const hidden = row.classList.toggle('lines-hidden');
+    textBtn.textContent = hidden ? '🔤 もじを みる' : '🙈 もじを かくす';
+  };
+
   row.innerHTML = '';
   assign.forEach(a => {
     const cham = CHAMS[a.chamKey];
@@ -387,7 +411,10 @@ function showStep(idx) {
     card.className = 'cham-card';
     card.style.setProperty('--cham-color', cham.color);
     card.innerHTML = `
-      <div class="cham-bubble">${a.option.text}<span class="cham-play">🔊</span></div>
+      <div class="cham-bubble">
+        <span class="cham-line">${a.option.text}</span>
+        <span class="cham-hidden-mark">🎧</span>
+      </div>
       <img src="${cham.img}" class="cham-img" alt="${cham.name}">
       <span class="cham-name">${cham.name}</span>`;
     // タップ = セリフを再生（何度でも）＋ このこを選ぶ
@@ -409,12 +436,14 @@ function showStep(idx) {
     if (!selected.a.option.ok) selected = null;
   };
 
-  // 最初の読み上げ: リスニング問題は住人のセリフ、スピーキング問題はチャムズの提案を順に
+  // 最初の読み上げ: 住人のセリフ → チャムズの提案を順に（りく→ぱく→みみ）
   setTimeout(() => {
+    const chamSeq = assign.map(a => ({ chamKey: a.chamKey, text: a.option.text }));
     if (step.witnessSays) {
-      speak(step.witnessSays.en, { female:true });
-    } else if (step.type === 'ask') {
-      speakSequence(assign.map(a => ({ chamKey: a.chamKey, text: a.option.text })));
+      speak(step.witnessSays.en, { female:true }, () =>
+        setTimeout(() => speakSequence(chamSeq), 600));
+    } else {
+      speakSequence(chamSeq);
     }
   }, 500);
 }
@@ -526,6 +555,7 @@ function onSolved() {
   const newRank = getRank(solvedCount());
 
   showStory(c.resolve, () => {
+    // ↓かいけつ画面へ
     // かいけつ画面
     $('solved-title-case').textContent = `${c.emoji} ${c.title}`;
     $('solved-stars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
@@ -552,7 +582,7 @@ function onSolved() {
         renderCasefile();
       }
     };
-  });
+  }, `${c.id}_resolve`);
 }
 
 function spawnSolvedConfetti() {
@@ -612,7 +642,7 @@ function startPrologue() {
     G.sawPrologue = true;
     saveGame();
     renderCasefile();
-  });
+  }, 'prologue');
 }
 
 // ─── 初期化 ───
